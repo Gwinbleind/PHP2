@@ -2,64 +2,48 @@
 
 namespace models;
 
-class Product
+use interfaces\IProduct;
+use services\Db;
+
+abstract class Product extends Model implements IProduct
 {
-    public $id;
-    public $name;
-    public $price;
-    public $amount;
-    public $category;
-    public $img_small;
-    public $img_medium;
-    public $img_large;
+    public ?int $id;
+    public ?string $name;
+    public ?int $price;
+    public ?string $category;
 
     /**
      * Product constructor.
-     * @param $id
-     * @param $name
-     * @param $price
-     * @param $amount
-     * @param $category
-     * @param $img_small
-     * @param $img_medium
-     * @param $img_large
+     * @param int|null $id
+     * @param string|null $name
+     * @param int|null $price
+     * @param string|null $category
      */
-    public function __construct($id = null, $name = null, $price = 0, $amount = 1, $category = null, $img_small = '', $img_medium = '', $img_large = '')
+    public function __construct(int $id = null, string $name = null, int $price = null, string $category = null)
     {
+        parent::__construct();
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
-        $this->amount = $amount;
         $this->category = $category;
-        $this->img_small = $img_small;
-        $this->img_medium = $img_medium;
-        $this->img_large = $img_large;
     }
 
-    //Рендер мини-ячейки продукта в выпадающей корзине
-    public function renderMiniCartItem()
+    public function getTableName()
     {
-        return "<div class=\"cart__product\">
-            <img src=\"{$this->img_small}\" alt=\"\" class=\"cart__prod_img\">
-            <div class=\"cart__prod_title\">{$this->name}</div>
-            <img src=\"img/stars5.jpg\" alt=\"stars\" class=\"cart__prod_stars\">
-            <div class=\"cart__prod_price\">{$this->amount}&nbsp<span class=\"price_x\">x</span>&nbsp{$this->price}</div>
-            <a @click.stop.prevent=\"handleByClick(id)\" href=\"#\">
-                <i data-product__id=\"{$this->id}\" class=\"cart__prod_del fa fa-times-circle\"></i>
-            </a>
-        </div>";
+        return 'catalog';
     }
-    //Рендер строки продукта на странице корзины
-    public function renderCartItem()
+    public function getRowByID(int $id)
     {
-        return "<div class=\"product__element\">
-            <a href=\"\" class=\"product__content\">
-                <img class=\"product__img\" src=\"{$this->img_medium}\" alt=\"\">
-                <div class=\"product__name\">{$this->name}</div>
-                <div class=\"product__price\">{$this->price}.00</div>
-            </a>
-            <a href=\"#\" @click.stop.prevent=\"handleByClick(id)\" class=\"product__add\" data-product__id=\"{$this->id}\">Add to Cart</a>
-            <img src=\"img/stars5.jpg\" alt=\"stars\" class=\"product__stars\">
-        </div>";
+        $product = parent::getRowByID($id);
+        $this->id = $id;
+        $this->name = $product['name'];
+        $this->price = $product['price'];
+        $this->amount = $product['amount'];
+        $this->category = $product['category'];
     }
+    public function getCost()
+    {
+        return $this->price*$this->amount;
+    }
+
 }
