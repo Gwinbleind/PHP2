@@ -1,12 +1,8 @@
 <?php
 
-use app\models\Product;
-use app\services\Autoloader;
-
 include realpath("../services/Autoloader.php");
+spl_autoload_register([new \app\services\Autoloader(), 'loadClass']);
 
-spl_autoload_register([new Autoloader(), 'loadClass']);
 
-$product = new Product();
-$product->getRowByID(1);
+$product = new \app\models\Product(null,'testName',50,3);
 var_dump($product);

@@ -14,7 +14,7 @@ class Db
     /**
      * @var PDO|null
      */
-    protected $database = null;
+    public $pdo = null;
 
     protected function getDsnString()
     {
@@ -28,32 +28,36 @@ class Db
     }
     public function getConnection()
     {
-        if (is_null($this->database)) {
-            $this->database = new PDO(
+        if (is_null($this->pdo)) {
+            $this->pdo = new PDO(
                 $this->getDsnString(),
                 $this->config['user'],
                 $this->config['pass']
             );
-            $this->database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         }
-        return $this->database;
+        return $this->pdo;
     }
-
-    private function query(string $sql, array $params = [])
+    //Low-level
+    public function getLastId()
+    {
+        return $this->pdo->lastInsertId();
+    }
+    public function query(string $sql, array $params = [])
     {
         //готовим запрос
-        $pdoStatement = $this->database->prepare($sql);
+        $pdoStatement = $this->pdo->prepare($sql);
         //выполняем запрос, подставляя массив параметров
         $pdoStatement->execute($params);
+        var_dump($pdoStatement->errorInfo());
         //возвращаем подготовленный запрос
         return $pdoStatement;
     }
-    private function execute(string $sql, array $params = [])
+    public function execute(string $sql, array $params = [])
     {
         //возвращает количество строк в ответе запроса
         return $this->query($sql,$params)->columnCount();
     }
-
     public function queryArray(string $sql, array $params = [])
     {
         return $this->query($sql,$params)->fetchAll(PDO::FETCH_ASSOC);
@@ -62,5 +66,4 @@ class Db
     {
         return $this->queryArray($sql,$params)[0];
     }
-
 }
