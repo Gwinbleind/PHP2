@@ -6,6 +6,7 @@ namespace app\models;
 
 use app\interfaces\IModel;
 use app\services\Db;
+use mysql_xdevapi\Result;
 
 abstract class Model implements IModel
 {
@@ -71,6 +72,19 @@ abstract class Model implements IModel
         $fillers = $this->getArrayOfFillers();
         return implode(', ',$fillers);
     }
+    protected function getStringOfParams()
+    {
+        //TODO: Переписать для вывода только измененных параметров
+        $func = function ($column, $filler) {
+            return "`{$column}`={$filler}";
+        };
+        $columns = $this->getArrayOfColumns();
+        $fillers = $this->getArrayOfFillers();
+        $result = array_map(function ($column, $filler) {
+            return "`{$column}`={$filler}";
+        },$columns,$fillers);
+        return implode(', ',$result);
+    }
 
     //CRUD
     protected function getCreateSqlString()
@@ -80,21 +94,18 @@ abstract class Model implements IModel
     }
     protected function getReadSqlString()
     {
-        $sql = "INSERT INTO `%s` (%s) VALUES (%s)";
-        sprintf($sql,$this->getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
-        return;
+        $sql = "SELECT * FROM `%s` WHERE `id` = :id";
+        return sprintf($sql,$this->getTableName());
     }
     protected function getUpdateSqlString()
     {
-        $sql = "INSERT INTO `%s` (%s) VALUES (%s)";
-        sprintf($sql,$this->getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
-        return;
+        $sql = "UPDATE `%s` SET %s WHERE `id` = :id";
+        return sprintf($sql,$this->getTableName(),$this->getStringOfParams());
     }
     protected function getDeleteSqlString()
     {
-        $sql = "INSERT INTO `%s` (%s) VALUES (%s)";
-        sprintf($sql,$this->getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
-        return;
+        $sql = "DELETE FROM `%s` WHERE `id` = :id";
+        return sprintf($sql,$this->getTableName());
     }
     //Create
     public function createRow()
@@ -109,7 +120,7 @@ abstract class Model implements IModel
         return $this->database->queryArray($sql);
     }
     public function getRowByID() {
-        $sql = "SELECT * FROM `{$this->getTableName()}` WHERE `id` = :id";
+        $sql = $this->getReadSqlString();
         $product = $this->database->queryOne($sql, [
             ':id'=>$this->id
         ]);
@@ -118,5 +129,10 @@ abstract class Model implements IModel
         }
     }
     //Update
+    public function updateRow()
+    {
+        $sql = $this->getUpdateSqlString();
+
+    }
     //Delete
 }
