@@ -5,4 +5,4 @@ spl_autoload_register([new \app\services\Autoloader(), 'loadClass']);
 
 
 $product = new \app\models\Product(null,'testName',50,3);
-var_dump($product);
+var_dump($product->getStringOfParams());
