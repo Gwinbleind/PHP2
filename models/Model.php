@@ -6,16 +6,17 @@ namespace app\models;
 
 use app\interfaces\IModel;
 use app\services\Db;
-use mysql_xdevapi\Result;
 
 abstract class Model implements IModel
 {
     public $id;
     public Db $database;
+    protected array $changed = [];
     protected array $hiddenProps = [
         'hiddenProps',
         'database',
-        'id'
+        'id',
+        'changed'
     ];
 
     public function __construct($id = null)
@@ -75,9 +76,6 @@ abstract class Model implements IModel
     protected function getStringOfParams()
     {
         //TODO: Переписать для вывода только измененных параметров
-        $func = function ($column, $filler) {
-            return "`{$column}`={$filler}";
-        };
         $columns = $this->getArrayOfColumns();
         $fillers = $this->getArrayOfFillers();
         $result = array_map(function ($column, $filler) {
@@ -99,8 +97,8 @@ abstract class Model implements IModel
     }
     protected function getUpdateSqlString()
     {
-        $sql = "UPDATE `%s` SET %s WHERE `id` = :id";
-        return sprintf($sql,$this->getTableName(),$this->getStringOfParams());
+        $sql = "UPDATE `%s` SET %s WHERE `id` = %s";
+        return sprintf($sql,$this->getTableName(),$this->getStringOfParams(),$this->id);
     }
     protected function getDeleteSqlString()
     {
@@ -132,7 +130,10 @@ abstract class Model implements IModel
     public function updateRow()
     {
         $sql = $this->getUpdateSqlString();
-
+        return $this->database->execute($sql,$this->getArrayOfParams());
     }
     //Delete
+    public function deleteRow() {
+        //TODO: Finish Delete
+    }
 }
