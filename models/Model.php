@@ -9,14 +9,16 @@ use app\services\Db;
 
 abstract class Model implements IModel
 {
-    public $id;
-    public Db $database;
+    protected $id;
+    protected Db $database;
     protected array $changed = [];
-    protected array $hiddenProps = [
+    protected static array $arrayOfColumns = [];
+    protected static array $hiddenProps = [
         'hiddenProps',
         'database',
         'id',
-        'changed'
+        'changed',
+        'arrayOfColumns',
     ];
 
     public function __construct($id = null)
@@ -25,17 +27,23 @@ abstract class Model implements IModel
         $this->database = Db::getInstance();
         $this->database->getConnection();
     }
+    public static function getTableName() :string
+    {
+        return "";
+    }
 
     //Автосоздание списков колонок, плейсхолдеров и значений
     protected function getArrayOfColumns()
     {
-        $columns = [];
-        foreach ($this as $key => $value) {
-            if (!in_array($key,$this->hiddenProps)) {
-                $columns[] = $key;
+        //массив всех параметров объекта
+        if (empty(self::$arrayOfColumns)) {
+            foreach ($this as $key => $value) {
+                if (!in_array($key,self::$hiddenProps)) {
+                    self::$arrayOfColumns[] = $key;
+                }
             }
         }
-        return $columns;
+        return self::$arrayOfColumns;
     }
     protected function getArrayOfFillers()
     {
@@ -49,7 +57,7 @@ abstract class Model implements IModel
     {
         $values = [];
         foreach ($this as $key => $value) {
-            if (!in_array($key,$this->hiddenProps)) {
+            if (!in_array($key,self::$hiddenProps)) {
                 $values[] = $value;
             }
         }
@@ -90,10 +98,10 @@ abstract class Model implements IModel
         $sql = "INSERT INTO `%s` (%s) VALUES (%s)";
         return sprintf($sql,$this->getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
     }
-    protected function getReadSqlString()
+    protected static function getReadSqlString()
     {
         $sql = "SELECT * FROM `%s` WHERE `id` = :id";
-        return sprintf($sql,$this->getTableName());
+        return sprintf($sql,self::getTableName());
     }
     protected function getUpdateSqlString()
     {
@@ -106,24 +114,28 @@ abstract class Model implements IModel
         return sprintf($sql,$this->getTableName());
     }
     //Create
-    public function createRow()
-    {
+    public function createRow() {
         $sql = $this->getCreateSqlString();
         $this->database->execute($sql,$this->getArrayOfParams());
         $this->id = $this->database->getLastId();
     }
     //Read
-    public function getFullTable() {
-        $sql = "SELECT * FROM `{$this->getTableName()}`";
-        return $this->database->queryArray($sql);
+    public static function getFullTable() :array {
+        $tableName = self::getTableName();
+        $sql = "SELECT * FROM `{$tableName}`";
+        return Db::getInstance()->queryArray(get_called_class(),$sql);
     }
-    public function getRowByID() {
-        $sql = $this->getReadSqlString();
-        $product = $this->database->queryOne($sql, [
-            ':id'=>$this->id
+    public static function getRowByID(int $id) :Model {
+        $sql = self::getReadSqlString();
+        return Db::getInstance()->queryOne(get_called_class(),$sql, [
+            ':id'=>$id
         ]);
-        foreach ($this->getArrayOfColumns() as $key) {
-            $this->$key = $product[$key];
+    }
+    public function readRowById()
+    {
+        $product = self::getRowByID($this->id);
+        foreach (self::getArrayOfColumns() as $key) {
+            $this->$key = $product->$key;
         }
     }
     //Update
@@ -135,7 +147,6 @@ abstract class Model implements IModel
     }
     //Delete
     public function deleteRow() {
-        //TODO: Finish Delete
         $sql = $this->getDeleteSqlString();
         return $this->database->execute($sql,[':id'=>$this->id]);
     }

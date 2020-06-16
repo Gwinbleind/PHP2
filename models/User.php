@@ -15,7 +15,7 @@ class User extends Model
         parent::__construct($id);
         $this->login = $login;
     }
-    public function getTableName()
+    public static function getTableName() :string
     {
         return 'users';
     }

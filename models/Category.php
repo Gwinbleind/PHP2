@@ -8,7 +8,7 @@ class Category extends Model
 {
     public $name;
 
-    public function getTableName()
+    public static function getTableName() :string
     {
         return 'categories';
     }

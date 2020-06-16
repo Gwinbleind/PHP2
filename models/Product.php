@@ -20,7 +20,7 @@ class Product extends Model implements IProduct
         $this->amount = 1;
     }
 
-    public function getTableName()
+    public static function getTableName() :string
     {
         return 'catalog';
     }

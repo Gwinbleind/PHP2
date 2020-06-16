@@ -6,10 +6,10 @@ namespace app\interfaces;
 
 interface IModel
 {
-    public function getTableName();
+    public static function getTableName() :string;
     //CRUD
     public function createRow();
-    public function getRowByID();
+    public static function getRowByID(int $id) :IModel;
     public function updateRow();
     public function deleteRow();
 }

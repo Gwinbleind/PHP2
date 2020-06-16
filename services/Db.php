@@ -4,6 +4,7 @@
 namespace app\services;
 
 use app\config\Tdb;
+use app\models\Model;
 use app\traits\TSingleton;
 use PDO;
 
@@ -34,7 +35,7 @@ class Db
                 $this->config['user'],
                 $this->config['pass']
             );
-            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_CLASS);
         }
         return $this->pdo;
     }
@@ -58,12 +59,14 @@ class Db
         //возвращает количество строк в ответе запроса
         return $this->query($sql,$params)->columnCount();
     }
-    public function queryArray(string $sql, array $params = [])
+    public function queryArray($classname, string $sql, array $params = [])
     {
-        return $this->query($sql,$params)->fetchAll(PDO::FETCH_ASSOC);
+        $pdoStatement = $this->query($sql,$params);
+        $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,$classname);
+        return $pdoStatement->fetchAll();
     }
-    public function queryOne(string $sql, array $params = [])
+    public function queryOne($classname, string $sql, array $params = []) :Model
     {
-        return $this->queryArray($sql,$params)[0];
+        return $this->queryArray($classname, $sql,$params)[0];
     }
 }
