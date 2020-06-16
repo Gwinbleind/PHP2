@@ -97,8 +97,8 @@ abstract class Model implements IModel
     }
     protected function getUpdateSqlString()
     {
-        $sql = "UPDATE `%s` SET %s WHERE `id` = %s";
-        return sprintf($sql,$this->getTableName(),$this->getStringOfParams(),$this->id);
+        $sql = "UPDATE `%s` SET %s WHERE `id` = :id";
+        return sprintf($sql,$this->getTableName(),$this->getStringOfParams());
     }
     protected function getDeleteSqlString()
     {
@@ -130,10 +130,13 @@ abstract class Model implements IModel
     public function updateRow()
     {
         $sql = $this->getUpdateSqlString();
-        return $this->database->execute($sql,$this->getArrayOfParams());
+        $arrayOfParams = array_merge($this->getArrayOfParams(),[':id'=>$this->id]);
+        return $this->database->execute($sql,$arrayOfParams);
     }
     //Delete
     public function deleteRow() {
         //TODO: Finish Delete
+        $sql = $this->getDeleteSqlString();
+        return $this->database->execute($sql,[':id'=>$this->id]);
     }
 }
