@@ -10,7 +10,6 @@ use app\services\Db;
 abstract class Model implements IModel
 {
     protected $id;
-    protected Db $database;
     protected array $changed = [];
     protected static array $arrayOfColumns = [];
     protected static array $hiddenProps = [
@@ -24,8 +23,6 @@ abstract class Model implements IModel
     public function __construct($id = null)
     {
         $this->id = $id;
-        $this->database = Db::getInstance();
-        $this->database->getConnection();
     }
     public static function getTableName() :string
     {
@@ -96,28 +93,28 @@ abstract class Model implements IModel
     protected function getCreateSqlString()
     {
         $sql = "INSERT INTO `%s` (%s) VALUES (%s)";
-        return sprintf($sql,$this->getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
+        return sprintf($sql,static::getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
     }
     protected static function getReadSqlString()
     {
         $sql = "SELECT * FROM `%s` WHERE `id` = :id";
-        return sprintf($sql,self::getTableName());
+        return sprintf($sql,static::getTableName());
     }
     protected function getUpdateSqlString()
     {
         $sql = "UPDATE `%s` SET %s WHERE `id` = :id";
-        return sprintf($sql,$this->getTableName(),$this->getStringOfParams());
+        return sprintf($sql,static::getTableName(),$this->getStringOfParams());
     }
     protected function getDeleteSqlString()
     {
         $sql = "DELETE FROM `%s` WHERE `id` = :id";
-        return sprintf($sql,$this->getTableName());
+        return sprintf($sql,static::getTableName());
     }
     //Create
     public function createRow() {
         $sql = $this->getCreateSqlString();
-        $this->database->execute($sql,$this->getArrayOfParams());
-        $this->id = $this->database->getLastId();
+        Db::getInstance()->execute($sql,$this->getArrayOfParams());
+        $this->id = Db::getInstance()->getLastId();
     }
     //Read
     public static function getFullTable() :array {
@@ -143,11 +140,11 @@ abstract class Model implements IModel
     {
         $sql = $this->getUpdateSqlString();
         $arrayOfParams = array_merge($this->getArrayOfParams(),[':id'=>$this->id]);
-        return $this->database->execute($sql,$arrayOfParams);
+        return Db::getInstance()->execute($sql,$arrayOfParams);
     }
     //Delete
     public function deleteRow() {
         $sql = $this->getDeleteSqlString();
-        return $this->database->execute($sql,[':id'=>$this->id]);
+        return Db::getInstance()->execute($sql,[':id'=>$this->id]);
     }
 }

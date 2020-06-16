@@ -20,11 +20,12 @@ trait TSingleton
     /**
      * @return static
      */
-    public static function getInstance()
+    public static function getInstance() :Db
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }
+        self::$instance::getConnection();
         return self::$instance;
     }
 }

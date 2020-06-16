@@ -6,7 +6,7 @@ namespace app\config;
 
 trait Tdb
 {
-protected array $config = [
+protected static array $config = [
         'driver' => 'mysql',
         'user' => 'geek',
         'pass' => 'geek',

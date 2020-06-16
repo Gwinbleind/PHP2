@@ -15,42 +15,42 @@ class Db
     /**
      * @var PDO|null
      */
-    public $pdo = null;
+    public static $pdo = null;
 
-    protected function getDsnString()
+    protected static function getDsnString()
     {
         return sprintf(
             '%s:host=%s;dbname=%s;charset=%s',
-            $this->config['driver'],
-            $this->config['host'],
-            $this->config['dbname'],
-            $this->config['charset'],
+            self::$config['driver'],
+            self::$config['host'],
+            self::$config['dbname'],
+            self::$config['charset'],
         );
     }
-    public function getConnection()
+    public static function getConnection()
     {
-        if (is_null($this->pdo)) {
-            $this->pdo = new PDO(
-                $this->getDsnString(),
-                $this->config['user'],
-                $this->config['pass']
+        if (is_null(self::$pdo)) {
+            self::$pdo = new PDO(
+                self::getDsnString(),
+                self::$config['user'],
+                self::$config['pass']
             );
-            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_CLASS);
+            self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_CLASS);
         }
-        return $this->pdo;
+        return self::$pdo;
     }
     //Low-level
     public function getLastId()
     {
-        return $this->pdo->lastInsertId();
+        return self::$pdo->lastInsertId();
     }
     public function query(string $sql, array $params = [])
     {
         //готовим запрос
-        $pdoStatement = $this->pdo->prepare($sql);
+        $pdoStatement = self::$pdo->prepare($sql);
         //выполняем запрос, подставляя массив параметров
         $pdoStatement->execute($params);
-        var_dump($pdoStatement->errorInfo());
+//        var_dump($pdoStatement->errorInfo());
         //возвращаем подготовленный запрос
         return $pdoStatement;
     }
