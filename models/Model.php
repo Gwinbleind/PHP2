@@ -9,7 +9,7 @@ use app\services\Db;
 
 abstract class Model implements IModel
 {
-    protected $id;
+    public $id;
     protected array $changed = [];
     protected static array $arrayOfColumns = [];
     protected static array $hiddenProps = [
@@ -118,7 +118,7 @@ abstract class Model implements IModel
     }
     //Read
     public static function getFullTable() :array {
-        $tableName = self::getTableName();
+        $tableName = static::getTableName();
         $sql = "SELECT * FROM `{$tableName}`";
         return Db::getInstance()->queryArray(get_called_class(),$sql);
     }
