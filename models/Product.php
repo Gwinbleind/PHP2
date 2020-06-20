@@ -4,12 +4,16 @@ namespace app\models;
 
 use app\interfaces\IProduct;
 
-class Product extends Model implements IProduct
+class Product extends Record implements IProduct
 {
     public $name;
     public $price;
     public $category;
     public $amount;
+    public $imgSmall;
+    public $imgMedium;
+    public $imgLarge;
+    public $description;
 
     public function __construct($id = null, $name = null, $price = null, $category = null)
     {

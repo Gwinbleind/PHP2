@@ -4,12 +4,12 @@
 namespace app\models;
 
 
-use app\interfaces\IModel;
+use app\interfaces\IRecord;
 use app\services\Db;
 
-abstract class Model implements IModel
+abstract class Record implements IRecord
 {
-    public $id;
+    public ?int $id;
     protected array $changed = [];
     protected static array $arrayOfColumns = [];
     protected static array $hiddenProps = [
@@ -88,6 +88,13 @@ abstract class Model implements IModel
         },$columns,$fillers);
         return implode(', ',$result);
     }
+    protected static function prepareCondition(string $condition = null) :string {
+        if (!empty($condition)|$condition == 0) {
+            return ' WHERE ' . $condition;
+        } else {
+            return '';
+        }
+    }
 
     //CRUD
     protected function getCreateSqlString()
@@ -95,20 +102,27 @@ abstract class Model implements IModel
         $sql = "INSERT INTO `%s` (%s) VALUES (%s)";
         return sprintf($sql,static::getTableName(),$this->getStringOfColumns(),$this->getStringOfFillers());
     }
-    protected static function getReadSqlString()
+    protected static function getReadSqlString(string $condition = '1')
     {
-        $sql = "SELECT * FROM `%s` WHERE `id` = :id";
+        $condition = self::prepareCondition($condition);
+        $sql = "SELECT * FROM `%s`" . $condition;
         return sprintf($sql,static::getTableName());
     }
-    protected function getUpdateSqlString()
+    protected function getUpdateSqlString(string $condition = '0')
     {
-        $sql = "UPDATE `%s` SET %s WHERE `id` = :id";
+        $condition = self::prepareCondition($condition);
+        $sql = "UPDATE `%s` SET %s" . $condition;
         return sprintf($sql,static::getTableName(),$this->getStringOfParams());
     }
-    protected function getDeleteSqlString()
+    protected function getDeleteSqlString(string $condition = '0')
     {
-        $sql = "DELETE FROM `%s` WHERE `id` = :id";
-        return sprintf($sql,static::getTableName());
+        $condition = self::prepareCondition($condition);
+        $sql = "DELETE FROM `%s`" . $condition;
+        if (!empty($condition)) {
+            return sprintf($sql,static::getTableName());
+        } else {
+            return $sql . ' WHERE 0';
+        }
     }
     //Create
     public function createRow() {
@@ -118,33 +132,41 @@ abstract class Model implements IModel
     }
     //Read
     public static function getFullTable() :array {
-        $tableName = static::getTableName();
-        $sql = "SELECT * FROM `{$tableName}`";
+        $sql = self::getReadSqlString();
         return Db::getInstance()->queryArray(get_called_class(),$sql);
     }
-    public static function getRowByID(int $id) :Model {
-        $sql = self::getReadSqlString();
-        return Db::getInstance()->queryOne(get_called_class(),$sql, [
-            ':id'=>$id
+    public static function getTableByProperty(string $name, string $value) :array {
+        $condition = "`{$name}` = :{$name}";
+        $sql = self::getReadSqlString($condition);
+//        var_dump($sql);
+        return Db::getInstance()->queryArray(get_called_class(),$sql,[
+            ":{$name}"=>$value
         ]);
     }
-    public function readRowById()
-    {
-        $product = self::getRowByID($this->id);
-        foreach (self::getArrayOfColumns() as $key) {
-            $this->$key = $product->$key;
-        }
+    public static function getRowByProperty(string $name, string $value) :Record {
+        $condition = "`{$name}` = :{$name}";
+        $sql = self::getReadSqlString($condition);
+        return Db::getInstance()->queryOne(get_called_class(),$sql, [
+            ":{$name}"=>$value
+        ]);
+    }
+    public static function getRowByID(int $id) :Record {
+//        $sql = self::getReadSqlString("`id` = :id");
+//        return Db::getInstance()->queryOne(get_called_class(),$sql, [
+//            ':id'=>$id
+//        ]);
+        return self::getRowByProperty('id',$id);
     }
     //Update
-    public function updateRow()
+    public function updateRowByID()
     {
         $sql = $this->getUpdateSqlString();
         $arrayOfParams = array_merge($this->getArrayOfParams(),[':id'=>$this->id]);
         return Db::getInstance()->execute($sql,$arrayOfParams);
     }
     //Delete
-    public function deleteRow() {
-        $sql = $this->getDeleteSqlString();
+    public function deleteRowById() {
+        $sql = $this->getDeleteSqlString("`id` = :id");
         return Db::getInstance()->execute($sql,[':id'=>$this->id]);
     }
 }

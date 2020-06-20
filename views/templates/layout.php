@@ -17,8 +17,6 @@
 </head>
 <body>
 <?=$menu?>
-<?=$header?>
 <?=$content?>
-<?=$footer?>
 </body>
 </html>

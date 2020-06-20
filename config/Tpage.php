@@ -8,7 +8,7 @@ trait Tpage
 {
     public $menu = [
         [
-            "title" => "1. Продукт id=1",
+            "title" => "1. Продукт c id=1",
             "href" => "/?c=product&a=card&id=1"
         ],
         [
@@ -16,12 +16,12 @@ trait Tpage
             "href" => "/?c=product&a=catalog"
         ],
         [
-            "title" => "3. Юзер",
-            "href" => "/?c=user"
+            "title" => "3. Юзер админ",
+            "href" => "/?c=user&a=info&login=admin&pass=123"
         ],
         [
-            "title" => "4. Корзина",
-            "href" => "/?c=cart"
+            "title" => "4. Корзина юзера с id=1",
+            "href" => "/?c=cart&a=info&userid=1"
         ],
     ];
     public $links = [

@@ -4,7 +4,7 @@
 namespace app\services;
 
 use app\config\Tdb;
-use app\models\Model;
+use app\models\Record;
 use app\traits\TSingleton;
 use PDO;
 
@@ -65,7 +65,7 @@ class Db
         $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,$classname);
         return $pdoStatement->fetchAll();
     }
-    public function queryOne($classname, string $sql, array $params = []) :Model
+    public function queryOne($classname, string $sql, array $params = []) :Record
     {
         return $this->queryArray($classname, $sql,$params)[0];
     }
