@@ -9,21 +9,38 @@ use app\services\Db;
 
 abstract class Record implements IRecord
 {
-    public ?int $id;
+    protected ?int $id;
     protected array $changed = [];
     protected static array $arrayOfColumns = [];
+    protected array $cache = [];
     protected static array $hiddenProps = [
         'hiddenProps',
         'database',
         'id',
+        'pass',
         'changed',
         'arrayOfColumns',
+        'cache',
     ];
 
     public function __construct($id = null)
     {
         $this->id = $id;
     }
+    public function __get($name) {
+        if (!in_array($name,static::$hiddenProps)) {
+            return $this->$name;
+        } else {
+            return $this->$name;
+        }
+    }
+    public function __set($name, $value) {
+        if (!in_array($name,static::$hiddenProps)) {
+            $this->cache[$name] = $this->$name;
+        }
+        $this->$name = $value;
+    }
+
     public static function getTableName() :string
     {
         return "";
@@ -62,9 +79,20 @@ abstract class Record implements IRecord
     }
     protected function getArrayOfParams()
     {
-        $keys = $this->getArrayOfFillers();
+        $fillers = $this->getArrayOfFillers();
         $values = $this->getArrayOfValues();
-        return array_combine($keys, $values);
+        return array_combine($fillers, $values);
+    }
+    protected function getArrayOfCacheParams()
+    {
+        $params = [];
+        $keys = $this->getArrayOfColumns();
+        foreach ($keys as $key) {
+            if (array_key_exists($key,$this->cache) && ($this->$key != $this->cache[$key])) {
+                $params[":{$key}"] = $this->$key;
+            }
+        }
+        return $params;
     }
     protected function getStringOfColumns() {
         $columns = $this->getArrayOfColumns();
@@ -80,12 +108,20 @@ abstract class Record implements IRecord
     }
     protected function getStringOfParams()
     {
-        //TODO: Переписать для вывода только измененных параметров
         $columns = $this->getArrayOfColumns();
         $fillers = $this->getArrayOfFillers();
         $result = array_map(function ($column, $filler) {
             return "`{$column}`={$filler}";
         },$columns,$fillers);
+        return implode(', ',$result);
+    }
+    protected function getStringOfCacheParams()
+    {
+        $columns = $this->getArrayOfCacheParams();
+        $result = [];
+        foreach ($columns as $key => $column) {
+            $result[] = str_replace('`:','`',"`{$key}`={$key}");
+        }
         return implode(', ',$result);
     }
     protected static function prepareCondition(string $condition = null) :string {
@@ -114,8 +150,12 @@ abstract class Record implements IRecord
         $sql = "UPDATE `%s` SET %s" . $condition;
         return sprintf($sql,static::getTableName(),$this->getStringOfParams());
     }
-    protected function getDeleteSqlString(string $condition = '0')
-    {
+    protected function getSaveSqlString(string $condition = '0') {
+        $condition = self::prepareCondition($condition);
+        $sql = "UPDATE `%s` SET %s" . $condition;
+        return sprintf($sql,static::getTableName(),$this->getStringOfCacheParams());
+    }
+    protected function getDeleteSqlString(string $condition = '0') {
         $condition = self::prepareCondition($condition);
         $sql = "DELETE FROM `%s`" . $condition;
         if (!empty($condition)) {
@@ -158,11 +198,21 @@ abstract class Record implements IRecord
         return self::getRowByProperty('id',$id);
     }
     //Update
-    public function updateRowByID()
-    {
-        $sql = $this->getUpdateSqlString();
+    public function updateRowByID() {
+        $condition = "`id` = :id";
+        $sql = $this->getUpdateSqlString($condition);
         $arrayOfParams = array_merge($this->getArrayOfParams(),[':id'=>$this->id]);
         return Db::getInstance()->execute($sql,$arrayOfParams);
+    }
+    public function saveRowByID() {
+        $arrayOfCacheParams = $this->getArrayOfCacheParams();
+        $this->cache = [];
+        if (!empty($arrayOfCacheParams)) {
+            $condition = "`id` = :id";
+            $sql = $this->getSaveSqlString($condition);
+            return Db::getInstance()->execute($sql,$arrayOfCacheParams);
+        }
+        return 0;
     }
     //Delete
     public function deleteRowById() {

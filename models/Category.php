@@ -6,7 +6,7 @@ namespace app\models;
 
 class Category extends Record
 {
-    public $name;
+    protected $name;
 
     public static function getTableName() :string
     {

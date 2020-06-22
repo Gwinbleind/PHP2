@@ -7,18 +7,10 @@ namespace app\models;
 
 class User extends Record
 {
-    public $login;
-    public $pass;
-    public $password_hash;
-    public $session_hash;
-    protected static array $hiddenProps = [
-        'hiddenProps',
-        'database',
-        'id',
-        'changed',
-        'arrayOfColumns',
-        'pass',
-    ];
+    protected $login;
+    protected $pass;
+    protected $password_hash;
+    protected $session_hash;
 
     public function __construct($id = null, $login = null, $pass = null)
     {

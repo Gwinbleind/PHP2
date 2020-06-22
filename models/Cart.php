@@ -7,10 +7,10 @@ namespace app\models;
 
 class Cart extends Record
 {
-    public int $userId;
-    public int $productId;
-    public int $amount;
-    public ?Product $product;
+    protected int $userId;
+    protected int $productId;
+    protected int $amount;
+    protected ?Product $product;
     protected static array $hiddenProps = [
         'hiddenProps',
         'database',

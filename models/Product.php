@@ -6,14 +6,14 @@ use app\interfaces\IProduct;
 
 class Product extends Record implements IProduct
 {
-    public $name;
-    public $price;
-    public $category;
-    public $amount;
-    public $imgSmall;
-    public $imgMedium;
-    public $imgLarge;
-    public $description;
+    protected $name;
+    protected $price;
+    protected $category;
+    protected $amount;
+    protected $imgSmall;
+    protected $imgMedium;
+    protected $imgLarge;
+    protected $description;
 
     public function __construct($id = null, $name = null, $price = null, $category = null)
     {

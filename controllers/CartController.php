@@ -28,5 +28,8 @@ class CartController extends Controller
         $this->params['scripts'] = $this->scripts;
         echo $this->actionRenderLayout('cart',$this->params);
     }
-
+    public function actionMini()
+    {
+        //TODO: Доделать выпадающую корзину
+    }
 }

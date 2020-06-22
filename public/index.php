@@ -11,7 +11,7 @@ spl_autoload_register([new Autoloader(), 'loadClass']);
 //http://php2/?c=user&a=info&login=admin&pass=123   Юзер
 //http://php2?c=cart&a=info&userid=1                Корзина
 
-$controllerName = 'app\\controllers\\' . ucfirst($_GET['c'] ?: 'page') . 'Controller';
+$controllerName = 'app\\controllers\\' . ucfirst($_GET['c'] ?: 'product') . 'Controller';
 $action = $_GET['a'];
 if (class_exists($controllerName)) {
     /** @var $controller Controller */
@@ -20,3 +20,8 @@ if (class_exists($controllerName)) {
 } else {
     die('Missing controller ' . $controllerName);
 }
+//$p = \app\models\Product::getRowByID(1);
+//$p->amount = 1;
+//$p->price = 52;
+//var_dump($p->cache);
+//var_dump($p->updateRowByID());

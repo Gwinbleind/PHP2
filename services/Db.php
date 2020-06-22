@@ -5,12 +5,12 @@ namespace app\services;
 
 use app\config\Tdb;
 use app\models\Record;
-use app\traits\TSingleton;
+use app\traits\TSingletonDb;
 use PDO;
 
 class Db
 {
-    use TSingleton, Tdb;
+    use TSingletonDb, Tdb;
     
     /**
      * @var PDO|null

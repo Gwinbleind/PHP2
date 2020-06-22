@@ -4,28 +4,27 @@
 namespace app\traits;
 
 
-use app\services\Db;
+use app\controllers\Controller;
 
-trait TSingleton
+trait TSingletonController
 {
     /**
-     * @var Db|null
+     * @var Controller|null
      */
     protected static $instance = null;
     //Закрываем все способы создания объекта
     private function __construct(){}
-    public function __wakeup(){}
-    public function __clone(){}
+    private function __wakeup(){}
+    private function __clone(){}
     //Пишем свой способ
     /**
-     * @return static
+     * @return Controller static
      */
-    public static function getInstance() :Db
+    public static function getInstance() :Controller
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }
-        self::$instance::getConnection();
         return self::$instance;
     }
 }
