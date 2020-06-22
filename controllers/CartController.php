@@ -6,9 +6,11 @@ namespace app\controllers;
 
 use app\models\Cart;
 use app\models\Product;
+use app\traits\TSingletonController;
 
 class CartController extends Controller
 {
+    use TSingletonController;
     protected $defaultAction = 'info';
     public function actionInfo() {
         $userId = $_GET['userid'];

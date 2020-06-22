@@ -15,13 +15,10 @@ $controllerName = 'app\\controllers\\' . ucfirst($_GET['c'] ?: 'product') . 'Con
 $action = $_GET['a'];
 if (class_exists($controllerName)) {
     /** @var $controller Controller */
-    $controller = new $controllerName;
+    $controller = $controllerName::getInstance();
     $controller->runAction($action);
 } else {
     die('Missing controller ' . $controllerName);
 }
-//$p = \app\models\Product::getRowByID(1);
-//$p->amount = 1;
-//$p->price = 52;
-//var_dump($p->cache);
-//var_dump($p->updateRowByID());
+
+//$c = \app\controllers\CartController::getInstance();

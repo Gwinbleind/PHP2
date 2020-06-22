@@ -5,9 +5,11 @@ namespace app\controllers;
 
 
 use app\models\User;
+use app\traits\TSingletonController;
 
 class UserController extends Controller
 {
+    use TSingletonController;
     protected $defaultAction = 'info';
 
     public function actionInfo() {
