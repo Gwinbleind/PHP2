@@ -120,7 +120,7 @@ abstract class Record implements IRecord
         $columns = $this->getArrayOfCacheParams();
         $result = [];
         foreach ($columns as $key => $column) {
-            $result[] = str_replace('`:','`',"`{$key}`={$key}");
+            $result[] = str_replace('`:','`',"`{$key}` = {$key}");
         }
         return implode(', ',$result);
     }
@@ -206,11 +206,12 @@ abstract class Record implements IRecord
     }
     public function saveRowByID() {
         $arrayOfCacheParams = $this->getArrayOfCacheParams();
-        $this->cache = [];
-        if (!empty($arrayOfCacheParams)) {
-            $condition = "`id` = :id";
-            $sql = $this->getSaveSqlString($condition);
-            return Db::getInstance()->execute($sql,$arrayOfCacheParams);
+        $arrayOfCacheParams = array_merge($arrayOfCacheParams,[':id'=>$this->id]);
+		if (!empty($arrayOfCacheParams)) {
+			$condition = "`id` = :id";
+			$sql = $this->getSaveSqlString($condition);
+			$this->cache = [];
+			return Db::getInstance()->execute($sql,$arrayOfCacheParams);
         }
         return 0;
     }

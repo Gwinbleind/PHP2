@@ -4,7 +4,6 @@
 namespace app\models;
 
 
-
 class Cart extends Record
 {
     protected int $userId;

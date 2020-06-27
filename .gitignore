@@ -1,4 +1,8 @@
 /.idea
+/vendor
 *.jpg
 *.png
 *.svg
+*.sass
+*.css.map
+none

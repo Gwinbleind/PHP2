@@ -67,6 +67,10 @@ class Db
     }
     public function queryOne($classname, string $sql, array $params = []) :Record
     {
-        return $this->queryArray($classname, $sql,$params)[0];
+    	$record = $this->queryArray($classname, $sql,$params)[0];
+    	if (is_null($record)) {
+    		$record = new $classname();
+		}
+        return $record;
     }
 }

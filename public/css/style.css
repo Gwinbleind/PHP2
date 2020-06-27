@@ -323,7 +323,7 @@ body {
   width: 100%;
   margin-left: 230px;
   justify-content: flex-start;
-  background: url(img/Promo_img.png) no-repeat 0 -50px;
+  background: url(../img/Promo_img.png) no-repeat 0 -50px;
 }
 .promo__line {
   height: 92px;
@@ -358,7 +358,7 @@ body {
   height: 843px;
 }
 .category__men {
-  background-image: url(img/Categoty_img_men.png);
+  background-image: url(../img/Categoty_img_men.png);
   width: 560px;
   height: 542px;
 }
@@ -367,15 +367,15 @@ body {
   height: 261px;
 }
 .category__women {
-  background-image: url(img/Categoty_img_women.png);
+  background-image: url(../img/Categoty_img_women.png);
 }
 .category__kids {
-  background-image: url(img/Categoty_img_kids.png);
+  background-image: url(../img/Categoty_img_kids.png);
   width: 560px;
   height: 542px;
 }
 .category__accesories {
-  background-image: url(img/Categoty_img_acc.png);
+  background-image: url(../img/Categoty_img_acc.png);
   width: 560px;
   height: 261px;
 }
@@ -518,7 +518,7 @@ body {
   margin-top: 113px;
 }
 .feature__offer {
-  background: no-repeat url(img/Feature_img.png);
+  background: no-repeat url(../img/Feature_img.png);
   width: 767px;
   height: 529px;
 }
@@ -589,7 +589,7 @@ body {
   width: 100%;
 }
 .subscribe__back {
-  background: url(img/Sub_back_2.png) no-repeat 9px, url(img/Sub_back_1.png) no-repeat 9px;
+  background: url(../img/Sub_back_2.png) no-repeat 9px, url(../img/Sub_back_1.png) no-repeat 9px;
   width: 1618px;
   height: 438px;
   justify-content: flex-start;
@@ -921,7 +921,6 @@ body {
 
 .button {
   cursor: pointer;
-  border: 0;
 }
 .button_goto {
   /* Style for "Go to cart" */
@@ -934,13 +933,9 @@ body {
   background-color: #ffffff;
   width: 225px;
   height: 50px;
-}
-.button_goto_quote {
   width: 100px;
   height: 35px;
   font-size: 11px;
-}
-.button_goto_coupon {
   width: 118px;
   height: 35px;
   font-size: 11px;
@@ -949,6 +944,7 @@ body {
   width: fit-content;
   height: fit-content;
   padding: 5px 10px;
+  border: 0;
 }
 
 .new__flex {

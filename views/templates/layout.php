@@ -17,6 +17,8 @@
 </head>
 <body>
 <?=$menu?>
-<?=$content?>
+<div id="root">
+	<?=$content?>
+</div>
 </body>
 </html>

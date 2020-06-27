@@ -5,13 +5,20 @@ namespace app\controllers;
 
 
 use app\config\Tpage;
+use app\interfaces\IRenderer;
 
-abstract class Controller
+class Controller
 {
     use Tpage;
-    protected $defaultAction = 'catalog';
+	protected string $defaultAction = 'catalog';
     protected $action;
     protected array $params = [];
+    protected IRenderer $renderer;
+
+    public function __construct(IRenderer $renderer)
+    {
+        $this->renderer = $renderer;
+    }
 
     public function runAction($action = null)
     {
@@ -23,30 +30,15 @@ abstract class Controller
             die('Missing method ' . $methodName);
         }
     }
-    //Render
-    public function actionRenderTemplate($page, $params = [])
-    {
-        ob_start();
-        if (!is_null($params)) {
-            extract($params);
-        }
-        $fileName = realpath('../views/templates/' . $page . ".php");
-        if (file_exists($fileName)) {
-            include $fileName;
-        } else {
-            exit("Страницы {$page} не существует");
-        }
-        return ob_get_clean();
-    }
     public function actionRenderLayout($page, $params = [])
     {
-        return $this->actionRenderTemplate("layout", [
-            "content" => $this->actionRenderTemplate($page, $params),
-            "menu" => $this->actionRenderTemplate("menu", $params),
-            "scripts" => $this->actionRenderTemplate("scripts", $params),
-            "links" => $this->actionRenderTemplate("links", $params),
-            "header" => $this->actionRenderTemplate("header", $params),
-            "footer" => $this->actionRenderTemplate("footer", $params),
+        return $this->renderer->render("layout", [
+            "content" => $this->renderer->render($page, $params),
+            "menu" => $this->renderer->render("menu", $params),
+            "scripts" => $this->renderer->render("scripts", $params),
+            "links" => $this->renderer->render("links", $params),
+            "header" => $this->renderer->render("header", $params),
+            "footer" => $this->renderer->render("footer", $params),
         ]);
     }
 }

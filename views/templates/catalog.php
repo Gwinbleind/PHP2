@@ -4,7 +4,7 @@
 		<?if (!empty($catalog)):?>
 			<?foreach ($catalog as $item):?>
 				<div class="product__element">
-					<a href="/?page=product&id=<?=$item->id?>" class="product__content">
+					<a href="/?c=product&a=card&id=<?=$item->id?>" class="product__content">
 						<img src="<?=$item->imgMedium?>" alt="" class="product__img">
 						<div class="product__name"><?=$item->name?></div>
 						<div class="product__price"><?=number_format($item->price,2,',','.')?></div>

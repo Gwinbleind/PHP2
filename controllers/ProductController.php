@@ -5,12 +5,10 @@ namespace app\controllers;
 
 
 use app\models\Product;
-use app\traits\TSingletonController;
 
 class ProductController extends Controller
 {
-    use TSingletonController;
-    protected $defaultAction = 'catalog';
+	protected string $defaultAction = 'catalog';
 
     public function actionCard()
     {

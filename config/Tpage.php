@@ -16,8 +16,8 @@ trait Tpage
             "href" => "/?c=product&a=catalog"
         ],
         [
-            "title" => "3. Юзер админ",
-            "href" => "/?c=user&a=info&login=admin&pass=123"
+            "title" => "3. Юзер",
+            "href" => "/?c=user"
         ],
         [
             "title" => "4. Корзина юзера с id=1",
@@ -34,5 +34,11 @@ trait Tpage
             'link' => 'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
             'async' => '0'
         ],
+    ];
+    public $shopVueScript = [
+        'shop_vue_js' => [
+            'link' => 'js/shop.js',
+            'async' => '1'
+        ]
     ];
 }
