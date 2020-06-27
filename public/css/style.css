@@ -921,6 +921,7 @@ body {
 
 .button {
   cursor: pointer;
+  border: 0;
 }
 .button_goto {
   /* Style for "Go to cart" */
