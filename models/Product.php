@@ -24,12 +24,13 @@ class Product extends Record implements IProduct
         $this->amount = 1;
     }
 
-    public static function getTableName() :string
-    {
-        return 'catalog';
-    }
     public function getCost()
     {
         return $this->price*$this->amount;
     }
+
+	public static function getTableName(): string
+	{
+		return 'catalog';
+	}
 }

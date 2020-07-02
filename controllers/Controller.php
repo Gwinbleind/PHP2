@@ -12,13 +12,18 @@ class Controller
     use Tpage;
 	protected string $defaultAction = 'catalog';
     protected $action;
-    protected array $params = [];
+    public array $params = [];
     protected IRenderer $renderer;
+    public bool $useLayout = true;
 
     public function __construct(IRenderer $renderer)
     {
         $this->renderer = $renderer;
     }
+    public function prepareParams() {
+    	$this->params['menu'] = $this->menu;
+    	return $this;
+	}
 
     public function runAction($action = null)
     {
@@ -27,18 +32,25 @@ class Controller
         if (method_exists($this, $methodName)) {
             $this->$methodName();
         } else {
-            die('Missing method ' . $methodName);
-        }
+			throw new \Exception('missing action');
+		}
     }
-    public function actionRenderLayout($page, $params = [])
+    public function actionRenderLayout($page)
     {
-        return $this->renderer->render("layout", [
-            "content" => $this->renderer->render($page, $params),
-            "menu" => $this->renderer->render("menu", $params),
-            "scripts" => $this->renderer->render("scripts", $params),
-            "links" => $this->renderer->render("links", $params),
-            "header" => $this->renderer->render("header", $params),
-            "footer" => $this->renderer->render("footer", $params),
-        ]);
+    	if ($this->useLayout) {
+			return $this->renderer->render("../layouts/layout", [
+				"menu" => $this->renderer->render("menu", $this->params),
+				"header" => $this->renderer->render("header", $this->params),
+				"content" => $this->renderer->render($page, $this->params),
+				"footer" => $this->renderer->render("footer", $this->params),
+			]);
+		} else {
+			return $this->renderer->render($page, $this->params);
+		}
     }
+
+	public function actionException(\Exception $exception) :void {
+		$this->prepareParams()->params['message'] = $exception->getMessage();
+		echo $this->actionRenderLayout('404');
+	}
 }

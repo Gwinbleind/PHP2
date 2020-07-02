@@ -20,25 +20,8 @@ trait Tpage
             "href" => "/?c=user"
         ],
         [
-            "title" => "4. Корзина юзера с id=1",
-            "href" => "/?c=cart&a=info&userid=1"
+            "title" => "4. Корзина текущего юзера",
+            "href" => "/?c=cart"
         ],
-    ];
-    public $links = [
-        'style_main' => 'css/style.css',
-        'lato_font' => 'https://fonts.googleapis.com/css?family=Lato:100,300,400,700&display=swap',
-        'font_awesome' => 'https://use.fontawesome.com/7f8eaeebe5.css',
-    ];
-    public $scripts = [
-        'vue' => [
-            'link' => 'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
-            'async' => '0'
-        ],
-    ];
-    public $shopVueScript = [
-        'shop_vue_js' => [
-            'link' => 'js/shop.js',
-            'async' => '1'
-        ]
     ];
 }

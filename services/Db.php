@@ -4,13 +4,14 @@
 namespace app\services;
 
 use app\config\Tdb;
+use app\exceptions\RecordException;
 use app\models\Record;
-use app\traits\TSingletonDb;
+use app\traits\TSingleton;
 use PDO;
 
 class Db
 {
-    use TSingletonDb, Tdb;
+    use TSingleton, Tdb;
     
     /**
      * @var PDO|null
@@ -57,19 +58,22 @@ class Db
     public function execute(string $sql, array $params = [])
     {
         //возвращает количество строк в ответе запроса
-        return $this->query($sql,$params)->columnCount();
+        return $this->query($sql,$params)->rowCount();
     }
     public function queryArray($classname, string $sql, array $params = [])
     {
         $pdoStatement = $this->query($sql,$params);
         $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,$classname);
-        return $pdoStatement->fetchAll();
+		$res = $pdoStatement->fetchAll();
+//		var_dump($res);
+        return $res;
     }
     public function queryOne($classname, string $sql, array $params = []) :Record
     {
     	$record = $this->queryArray($classname, $sql,$params)[0];
     	if (is_null($record)) {
-    		$record = new $classname();
+//    		$record = new $classname();
+    		throw new RecordException('product not found');
 		}
         return $record;
     }

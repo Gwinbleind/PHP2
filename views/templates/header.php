@@ -1,9 +1,9 @@
-<?php ?>
+<?php /** @var \app\models\User $user */?>
 <header class="header">
     <div class="header_flex">
         <!-- Левая часть -->
         <div class="container__left div_flex">
-            <a href="index.html" class="logo div_flex">
+            <a href="/" class="logo div_flex">
                 <img alt="logo" class="logo__img" src="img\logo.png"><span class="logo_1">BRAN</span><span class="logo_2"><b>D</b></span>
             </a>
             <form action="#" class="header__form">
@@ -60,17 +60,18 @@
                 <span class="my_account__fa_caret"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
                 <!--Выпадающее меню аккаунт-->
                 <div id="dropUser" class="drop drop__account">
-                    <div v-if="user.name !== ''">
-                        <a class="story__name" href="user.html">Account</a>
-                        <p class="drop__link">Username: {{user.name}}</p>
-                        <p class="drop__link">E-mail: {{user.mail}}</p>
-                        <p class="drop__link">Age: {{user.age}}</p>
+	                 <? if (!empty($user->login)):?>
+                    <div>
+                        <a class="story__name" href="http://php2/?c=user">Account</a>
+                        <p class="drop__link">Username: <?=$user->login?></p>
+                        <p class="drop__link">E-mail: <?=$user->mail?></p>
+                        <p class="drop__link">Age: <?=$user->age?></p>
                         <!--							<button @click="logoutClickHandler">Logout</button>-->
                         <div class="button button_login div_flex" @click="logoutClickHandler">Logout</div>
                     </div>
-                    <div v-else>
-                        <a href="user.html">Login</a>
-                    </div>
+	                 <?else:?>
+                        <a href="http://php2/?c=user">Login</a>
+	                 <?endif;?>
                 </div>
             </div>
         </div>
@@ -79,10 +80,10 @@
 <nav>
     <!-- Список меню -->
     <ul class="menu">
-        <li class="menu__list"><a href="index.html" class="menu__link">Home</a></li>
-        <li class="menu__list"><a href="product.html" class="menu__link">Man</a></li>
+        <li class="menu__list"><a href="/" class="menu__link">Home</a></li>
+        <li class="menu__list"><a href="http://php2?c=product&a=card&id=1" class="menu__link">Man</a></li>
         <li class="menu__list">
-            <a href="product.html" class="menu__link">Women</a>
+            <a href="http://php2?c=product&a=card&id=1" class="menu__link">Women</a>
             <!-- Выпадающее меню, завязанное на "Women" menu link -->
             <div class="drop menu__drop">
                 <div class="dropflex">
@@ -129,11 +130,11 @@
                 <span class="drop__img_text">Super<br>sale!</span>
             </div>
         </li>
-        <li class="menu__list"><a href="product.html" class="menu__link">Kids</a></li>
-        <li class="menu__list"><a href="product.html" class="menu__link">Accoseriese</a></li>
-        <li class="menu__list"><a href="product.html" class="menu__link">Featured</a></li>
+        <li class="menu__list"><a href="http://php2?c=product&a=card&id=1" class="menu__link">Kids</a></li>
+        <li class="menu__list"><a href="http://php2?c=product&a=card&id=1" class="menu__link">Accoseriese</a></li>
+        <li class="menu__list"><a href="http://php2?c=product&a=card&id=1" class="menu__link">Featured</a></li>
         <li class="menu__list">
-            <a href="product.html" class="menu__link">Hot Deals</a>
+            <a href="http://php2?c=product&a=card&id=1" class="menu__link">Hot Deals</a>
             <div class="drop menu__drop menu__drop_last">
                 <div class="dropflex">
                     <div class="drop__h3">Women</div>

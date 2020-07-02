@@ -188,25 +188,6 @@ const app = new Vue({
       },
    },
    methods: {
-      loginRequest() {
-         // alert('hi');
-         // return fetch('/?c=user&a=test', {
-         //    method: 'POST',
-         //    headers: new Headers({
-         //       'Content-type': 'application/json'
-         //    }),
-         //    body: JSON.stringify({
-         //       login: this.loginForm.Name,
-         //       pass: this.loginForm.Password,
-         //       save: true,
-         //    })
-         // })
-         //    .then(response => {
-         //       if (response.ok) {
-         //          return response.text()
-         //       } else {throw new Error(`${response.status}`)}
-         //    })
-      },
       loginClickHandler() {
          if (regLoginExp.test(this.loginForm.Name) && regPasswordExp.test(this.loginForm.Password)) {
             let form = document.querySelector('form');
@@ -227,6 +208,44 @@ const app = new Vue({
       logoutClickHandler() {
          location.assign("/?c=user&a=logout");
       },
+      cartAmountChangeHandler(event) {
+         fetch('/?c=cart&a=update',{
+            method: 'POST',
+            headers: new Headers({
+               'Content-type': 'application/json'
+            }),
+            body: JSON.stringify({
+               id: +event.target.dataset.id,
+               amount: +event.target.value,
+            })
+         })
+            .then(response => response.json())
+            .then(response => {
+               if (response !== 1) {
+                  alert('update not done')
+               }
+            })
+      },
+
+      cartXClickHandler(event) {
+         fetch('/?c=cart&a=delete',{
+            method: 'POST',
+            headers: new Headers({
+               'Content-type': 'application/json'
+            }),
+            body: JSON.stringify({
+               id: +event.target.dataset.id,
+            })
+         })
+            .then(response => response.json())
+            .then(response => {
+               if (response !== 1) {
+                  alert('delete not done')
+               } else {
+                  location.assign('/?c=cart')
+               }
+            })
+      },
       fetchRequest(url) {
          return fetch(url)
             .then(response => {
@@ -243,12 +262,6 @@ const app = new Vue({
       },
       productsBoxClickHandler(item) {
          return this.addToCart(+item.id);
-      },
-      cartXClickHandler(item) {
-         return this.deleteFromCart(item.id);
-      },
-      cartAmountChangeHandler(item) {
-         return this.updateCart(item.id, item.amount)
       },
       loginOrRegisterClickHandler(type) {
          this.logOrRegStatus = type

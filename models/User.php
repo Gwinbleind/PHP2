@@ -18,13 +18,13 @@ class User extends Record
         $this->login = $login;
         $this->pass = $pass;
     }
-    public static function getTableName() :string
-    {
-        return 'users';
-    }
 
     public function validation() :bool {
         return password_verify($this->pass, $this->password_hash);
     }
 
+	public static function getTableName(): string
+	{
+		return 'users';
+	}
 }
