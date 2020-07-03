@@ -268,6 +268,24 @@ const app = new Vue({
                }
             })
       },
+      productsBoxClickHandler(event) {
+         console.log(event.target.dataset.product__id)
+         fetch('/?c=product&a=add',{
+            method: 'POST',
+            headers: new Headers({
+               'Content-type': 'application/json'
+            }),
+            body: JSON.stringify({
+               id: +event.target.dataset.product__id,
+            })
+         })
+            .then(response => response.json())
+            .then(response => {
+               if (response === 0) {
+                  alert('update not done')
+               }
+            })
+      },
 
       fetchRequest(url) {
          return fetch(url)
@@ -282,9 +300,6 @@ const app = new Vue({
          this.filteredCatalog = this.catalog.filter(item => {
             return regExp.test(item.product_name)
          });
-      },
-      productsBoxClickHandler(item) {
-         return this.addToCart(+item.id);
       },
       loginOrRegisterClickHandler(type) {
          this.logOrRegStatus = type

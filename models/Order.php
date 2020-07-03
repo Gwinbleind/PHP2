@@ -20,7 +20,7 @@ class Order extends Record implements IRecord
 		return 'orders';
 	}
 
-	public function __construct(int $userId = null, string $address = '', string $deliveryDate = null, int $cost = 0, $id = null)
+	public function __construct(int $userId = null, string $address = '', string $deliveryDate = '', int $cost = 0, $id = null)
 	{
 		parent::__construct($id);
 		$this->userId = $userId;

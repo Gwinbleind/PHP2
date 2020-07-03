@@ -34,33 +34,3 @@ if (class_exists($controllerName)) {
 	$c = new Controller(new TemplateRenderer());
 	$c->actionException(new Exception('page not found'));
 }
-
-//abstract class A
-//{
-//	public static array $i = [];
-//
-//	public function setI()
-//	{
-//		foreach ($this as $key) {
-//			static::$i[] = $key;
-//		}
-//	}
-//}
-//
-//class B extends A
-//{
-//	public static array $i = [];
-//	public int $B = 1;
-//}
-//class C extends A
-//{
-//	public static array $i = [];
-//	public int $C = 2;
-//}
-//
-//$b = new B();
-//$b->setI();
-//var_dump($b::$i);
-//$c = new C();
-//$c->setI();
-//var_dump($c::$i);

@@ -19,6 +19,7 @@ class Repository implements IRepository
 		$this->db = Db::getInstance();
 		$this->db::getConnection();
 		$this->recordClass = $recordClass;
+		//TODO: А сильно ли нам нужен репо для каждого рекорда отдельно?
 	}
 
 	protected function prepareCondition(string $condition = null) :string {
@@ -101,6 +102,17 @@ class Repository implements IRepository
 		return $this->db->queryArray($this->getObjectClass(),$sql,[
 			":{$name}"=>$value
 		]);
+	}
+	public function getTableBySomeProps(array $conditions) :array {
+		$cons = [];
+		$props = [];
+		foreach ($conditions as $name => $value) {
+			$cons[] = "`{$name}` = :{$name}";
+			$props[$name] = $value;
+		}
+		$condition = implode(' and ', $cons);
+		$sql = $this->getReadSqlString($condition);
+		return $this->db->queryArray($this->getObjectClass(),$sql,$props);
 	}
 	public function getRowByProperty(string $name, string $value) :IRecord {
 		$condition = "`{$name}` = :{$name}";
