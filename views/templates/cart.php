@@ -45,29 +45,26 @@ use app\models\Cart; ?>
 			<a href="/"><div class="button_goto div_flex">Continue Shopping</div></a>
 		</div>
 		<div class="form__box">
-			<form id="shipping form" action="" class="shipping_form">
+			<form name="shipping" action="" class="shipping_form">
 				<div class="shipping_form__h1">Shipping Adress</div>
-				<select class="choose__box choose__box_ship" name="country" id="choose country" form="shipping form">
-					<option value="1">Bangladesh</option>
-					<option value="2">USA</option>
-					<option value="3">United Kingdom</option>
-					<option value="4">Gonduras</option>
-					<option value="5">Russian Federation</option>
+				<select class="choose__box choose__box_ship" name="country">
+					<option value="Bangladesh">Bangladesh</option>
+					<option value="USA">USA</option>
+					<option value="United Kingdom">United Kingdom</option>
+					<option value="Gonduras">Gonduras</option>
+					<option value="Russian Federation">Russian Federation</option>
 				</select>
-				<input class="choose__box choose__box_ship" type="text" form="shipping form" id="choose State"
-				       placeholder="State">
-				<input class="choose__box choose__box_ship" type="text" form="shipping form" id="choose ZIP"
-				       placeholder="Postcode / Zip">
+				<input class="choose__box choose__box_ship" type="text" name="state" placeholder="State">
+				<input class="choose__box choose__box_ship" type="text" name="zip" placeholder="Postcode / Zip">
 				<input class="button_goto button_goto_quote" type="submit" value="get a quote">
 			</form>
-			<form id="coupon form" action="" class="shipping_form">
+			<form id="coupon_form" name="coupon" action="" class="shipping_form">
 				<div class="shipping_form__h1">coupon discount</div>
 				<div class="shipping_form__h2">Enter your coupon code if you have one</div>
-				<input class="choose__box choose__box_ship" type="text" form="coupon form" id="choose State2"
-				       placeholder="State">
+				<input class="choose__box choose__box_ship" type="text" name="coupon" placeholder="State">
 				<input class="button_goto button_goto_coupon" type="submit" value="Apply coupon">
 			</form>
-			<form id="checkout form" action="" class="checkout_form">
+			<form id="checkout_form" name="checkout" action="" class="checkout_form">
 				<div class="checkout_form__h2">
 					<span>Sub total</span>
 					<div style="width: 20px; height: 10px"></div>
@@ -78,7 +75,9 @@ use app\models\Cart; ?>
 					<div style="width: 20px; height: 10px"></div>
 					<span class="checkout_form__h1_active">$<?= $totalCost ?></span>
 				</div>
-				<div class="checkout_form__submit div_flex">proceed to checkout</div>
+				<a href="">
+					<div data-id="<?= $item->id ?>" @click.stop.prevent="orderClickHandler" class="checkout_form__submit div_flex">proceed to checkout</div>
+				</a>
 			</form>
 		</div>
 	</div>

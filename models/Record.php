@@ -4,11 +4,13 @@
 namespace app\models;
 
 
-abstract class Record
+use app\interfaces\IRecord;
+
+abstract class Record implements IRecord
 {
     protected ?int $id;
 
-    protected static array $arrayOfColumns = [];
+    protected array $arrayOfColumns = [];
 	protected array $cache = [];
 	protected static array $hiddenProps = [
 		'arrayOfColumns',
@@ -24,16 +26,17 @@ abstract class Record
 	abstract public static function getTableName() :string;
 
 //	Автосоздание списков колонок, плейсхолдеров и значений
-	protected function getArrayOfColumns(): array {
+// TODO: public
+	public function getArrayOfColumns(): array {
 		//массив всех параметров объекта
-		if (empty(static::$arrayOfColumns)) {
+		if (empty($this->arrayOfColumns)) {
 			foreach ($this as $key => $value) {
 				if (!in_array($key,static::$hiddenProps)) {
-					static::$arrayOfColumns[] = $key;
+					$this->arrayOfColumns[] = $key;
 				}
 			}
 		}
-		return static::$arrayOfColumns;
+		return $this->arrayOfColumns;
 	}
 	protected function getArrayOfFillers(): array {
 		$fillers = $this->getArrayOfColumns();

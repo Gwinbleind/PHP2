@@ -226,7 +226,6 @@ const app = new Vue({
                }
             })
       },
-
       cartXClickHandler(event) {
          fetch('/?c=cart&a=delete',{
             method: 'POST',
@@ -246,6 +245,30 @@ const app = new Vue({
                }
             })
       },
+      orderClickHandler(event) {
+         let form1 = document.forms.shipping;
+         let form2 = document.forms.coupon;
+         let address = [form1.elements.country.value,form1.elements.state.value,form1.elements.zip.value].join(' ');
+         fetch('/?c=cart&a=order',{
+            method: 'POST',
+            headers: new Headers({
+               'Content-type': 'application/json'
+            }),
+            body: JSON.stringify({
+               address: address,
+               deliveryDate: new Date(),
+            })
+         })
+            .then(response => response.json())
+            .then(response => {
+               if (response === 0) {
+                  alert('delete not done')
+               } else {
+                  location.assign('/?c=cart')
+               }
+            })
+      },
+
       fetchRequest(url) {
          return fetch(url)
             .then(response => {

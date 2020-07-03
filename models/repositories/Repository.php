@@ -4,6 +4,7 @@
 namespace app\models\repositories;
 
 
+use app\interfaces\IRecord;
 use app\interfaces\IRepository;
 use app\models\Record;
 use app\services\Db;
@@ -28,18 +29,18 @@ class Repository implements IRepository
 		}
 	}
 
-	public function getTableName() :string {
-		return $this->getObjectClass()::getTableName();
-	}
 	protected function getObjectClass() :string {
 		return $this->recordClass;
 	}
+	public function getTableName() :string {
+		return $this->getObjectClass()::getTableName();
+	}
 
 	//CRUD
-	protected function getCreateSqlString()
+	protected function getCreateSqlString(Record $record)
 	{
 		/** @var Record $record */
-		$record = $this->getObjectClass();
+//		var_dump($record);
 		$sql = 'INSERT INTO `%s` (%s) VALUES (%s)';
 		return sprintf(
 			$sql,
@@ -83,10 +84,11 @@ class Repository implements IRepository
 		}
 	}
 	//Create
-	public function createRow(Record $record) :void {
-		$sql = $this->getCreateSqlString();
-		$this->db->execute($sql,$record->getArrayOfParams());
+	public function createRow(Record $record) {
+		$sql = $this->getCreateSqlString($record);
+		$res = $this->db->execute($sql,$record->getArrayOfParams());
 		$record->id = $this->db->getLastId();
+		return $res;
 	}
 	//Read
 	public function getFullTable() :array {
@@ -100,27 +102,21 @@ class Repository implements IRepository
 			":{$name}"=>$value
 		]);
 	}
-	public function getRowByProperty(string $name, string $value) :Record {
+	public function getRowByProperty(string $name, string $value) :IRecord {
 		$condition = "`{$name}` = :{$name}";
 		$sql = $this->getReadSqlString($condition);
 		return $this->db->queryOne($this->getObjectClass(),$sql, [
 			":{$name}"=>$value
 		]);
 	}
-	public function getRowByID(int $id) :Record {
+	public function getRowByID(int $id) :IRecord {
 		return $this->getRowByProperty('id',$id);
 	}
 	//Update
-//	public function updateRowByID() {
-//		$condition = "`id` = :id";
-//		$sql = $this->getUpdateSqlString($condition);
-//		$arrayOfParams = array_merge($this->getArrayOfParams(),[':id'=>$this->getObjectClass()->id]);
-//		return $this->db->execute($sql,$arrayOfParams);
-//	}
 	public function saveRowByID(Record $record) {
 		$arrayOfCacheParams = $record->getArrayOfCacheParams();
-		$arrayOfCacheParams = array_merge($arrayOfCacheParams, [':id'=>$record->id]);
 		if (!empty($arrayOfCacheParams)) {
+			$arrayOfCacheParams = array_merge($arrayOfCacheParams, [':id'=>$record->id]);
 			$condition = "`id` = :id";
 			$sql = $this->getSaveSqlString($record, $condition);
 			$record->cache = [];

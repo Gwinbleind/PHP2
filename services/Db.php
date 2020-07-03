@@ -4,8 +4,7 @@
 namespace app\services;
 
 use app\config\Tdb;
-use app\exceptions\RecordException;
-use app\models\Record;
+use app\interfaces\IRecord;
 use app\traits\TSingleton;
 use PDO;
 
@@ -68,12 +67,12 @@ class Db
 //		var_dump($res);
         return $res;
     }
-    public function queryOne($classname, string $sql, array $params = []) :Record
+    public function queryOne($classname, string $sql, array $params = []) :IRecord
     {
     	$record = $this->queryArray($classname, $sql,$params)[0];
     	if (is_null($record)) {
-//    		$record = new $classname();
-    		throw new RecordException('product not found');
+    		$record = new $classname();
+//    		throw new RecordException('product not found');
 		}
         return $record;
     }

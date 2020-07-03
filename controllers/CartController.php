@@ -6,47 +6,52 @@ namespace app\controllers;
 
 use app\models\Cart;
 use app\models\Order;
+use app\models\OrderInfo;
 use app\models\Product;
 use app\models\repositories\Repository;
 use app\services\TemplateRenderer;
 
 class CartController extends Controller
 {
-	protected Cart $cart;
+	protected array $cartArray;
 	protected string $defaultAction = 'info';
-    public function actionInfo() {
-		session_start();
-//		$userController = new UserController(new TemplateRenderer());
+
+	protected function getTotalCost()
+	{
+		$totalCost = 0;
+		$productRepository = new Repository(Product::class);
+		if (!empty($this->cartArray)) {
+			foreach ($this->cartArray as $item) {
+				/** @var Cart $item */
+				$item->product = $productRepository->getRowByID($item->productId);
+				$item->product->amount = $item->amount;
+				$totalCost += $item->product->getCost();
+			}
+		}
+		return $totalCost;
+	}
+
+	public function actionInfo() {
 		$userController = new UserController(new TemplateRenderer());
 		if ($userController->isAuthorised()) {
-//			$userId = $_GET['userid'];
 			$cartRepository = new Repository(Cart::class);
-			$cart = $cartRepository->getTableByProperty('userId',$userController->getId());
-			$totalCost = 0;
-			$productRepository = new Repository(Product::class);
-			if (!empty($cart)) {
-				foreach ($cart as $item) {
-					/** @var Cart $item */
-					$item->product = $productRepository->getRowByID($item->productId);
-					$item->product->amount = $item->amount;
-					$totalCost += $item->product->getCost();
-					$this->params['cart'] = $cart;
-				}
-			} else {
-				$this->params['cart'] = $cart;
-			}
-        $this->params['totalCost'] = $totalCost;
+			$this->cartArray = $cartRepository->getTableByProperty('userId',$userController::getId());
+
+			$totalCost = $this->getTotalCost();
+
+			$this->params['cart'] = $this->cartArray;
+			$this->params['totalCost'] = $totalCost;
+
         $this->prepareParams();
         echo $this->actionRenderLayout('cart');
 		} else {
 			header('Location: /?c=user');
 		}
     }
-    public function actionMini()
+	public function actionMini()
     {
         //TODO: Доделать выпадающую корзину
     }
-
 	public function actionUpdate()
 	{
 		$data = json_decode(file_get_contents('php://input'));
@@ -61,8 +66,7 @@ class CartController extends Controller
 		header('Content-type: application/json');
 		echo json_encode($response);
     }
-	public function actionDelete()
-	{
+	public function actionDelete() {
 		$data = json_decode(file_get_contents('php://input'));
 		$id = $data->id;
 
@@ -73,15 +77,35 @@ class CartController extends Controller
 		header('Content-type: application/json');
 		echo json_encode($response);
     }
-	public function actionOrder()
-	{
-		//TODO: Order
+	public function actionOrder() {
 		$data = json_decode(file_get_contents('php://input'));
-		$userId = $data->userId;
+		$address = $data->address;
+		$deliveryDate = $data->deliveryDate;
 
-		$repo = new Repository(Order::class);
-		$user = $repo->getRowByID($userId);
-		$response = $repo;
+		$response = 0;
+		$userController = new UserController(new TemplateRenderer());
+		if ($userController->isAuthorised()) {
+			$orderRepository = new Repository(Order::class);
+			$orderInfoRepository = new Repository(OrderInfo::class);
+			$cartRepository = new Repository(Cart::class);
+			$productRepository = new Repository(Product::class);
+
+			$userId = $userController::getId();
+			$this->cartArray = $cartRepository->getTableByProperty('userId',$userId);
+			$order = new Order($userId,$address,$deliveryDate,$this->getTotalCost());
+			$response += $orderRepository->createRow($order);
+			foreach ($this->cartArray as $cart) {
+				/** @var Cart $cart */
+				$cart->product = $productRepository->getRowByID($cart->productId);
+				$orderInfo = new OrderInfo($order->id, $cart->productId, $cart->product->price, $cart->amount);
+				$response += $orderInfoRepository->createRow($orderInfo);
+			}
+		}
+		if ($response == count($this->cartArray)+1) {
+			foreach ($this->cartArray as $cart) {
+				$cartRepository->deleteRowById($cart);
+			}
+		}
 
 		header('Content-type: application/json');
 		echo json_encode($response);

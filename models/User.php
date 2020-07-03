@@ -5,14 +5,16 @@ namespace app\models;
 
 
 
-class User extends Record
-{
-    protected $login;
-    protected $pass;
-    protected $password_hash;
-    protected $session_hash;
+use app\interfaces\IRecord;
 
-    public function __construct($id = null, $login = null, $pass = null)
+class User extends Record implements IRecord
+{
+    protected string $login;
+    protected string $pass;
+    protected ?string $password_hash;
+    protected string $session_hash;
+
+    public function __construct(string $login = '', string $pass = '', $id = null)
     {
         parent::__construct($id);
         $this->login = $login;
