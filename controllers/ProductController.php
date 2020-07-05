@@ -7,6 +7,7 @@ namespace app\controllers;
 use app\models\Cart;
 use app\models\Product;
 use app\models\repositories\Repository;
+use app\services\Request;
 use app\services\TemplateRenderer;
 
 class ProductController extends Controller
@@ -15,7 +16,7 @@ class ProductController extends Controller
 
     public function actionCard()
     {
-        $id = $_GET['id'];
+        $id = (new Request())->get('id');
 		$repo = new Repository(Product::class);
 		$this->params['item'] = $repo->getRowByID($id);
         echo $this->prepareParams()->actionRenderLayout('product');

@@ -10,6 +10,7 @@ use app\models\OrderInfo;
 use app\models\Product;
 use app\models\repositories\Repository;
 use app\models\User;
+use app\services\Request;
 
 class UserController extends Controller implements IUserController
 {
@@ -33,10 +34,6 @@ class UserController extends Controller implements IUserController
 				$user = $userRepository->getRowByProperty("session_hash", $hash);
 				$this->setUser($user);
 				$login = $this->user->login;
-//				TODO: не понял, почему, но напрямую эти варианты if не работают,
-// 				Приходится создавать отдельную переменную
-//				if (isset($this->user->login)) {
-//				if (!empty($this->user->login)) {
 				if (isset($login)) {
 					$_SESSION['login'] = $login;
 					$_SESSION['id'] = $this->user->id;
@@ -55,7 +52,10 @@ class UserController extends Controller implements IUserController
 		return isset($_SESSION['login']);
 	}
 	protected function isInserted() :bool {
-		return isset($_POST['login']) && isset($_POST['pass']);
+		$request = new Request();
+		$login = $request->post('login');
+		$pass = $request->post('pass');
+		return isset($login) && isset($pass);
 	}
 	protected function info() :void {
 		$login = strip_tags(static::getLogin());
@@ -82,9 +82,11 @@ class UserController extends Controller implements IUserController
 		echo $this->actionRenderLayout('user_info');
 	}
 	protected function login() {
-		$login = strip_tags($_POST['login']);
-		$pass = strip_tags($_POST['pass']);
-		$save = isset($_POST['save']);
+		$request = new Request();
+		$login = $request->post('login');
+		$pass = $request->post('pass');
+		$save = $request->post('save');
+		$save = isset($save);
 		$userRepository = new Repository(User::class);
 		/** @var User $user */
 		$user = $userRepository->getRowByProperty('login', $login);
@@ -119,8 +121,9 @@ class UserController extends Controller implements IUserController
         echo $this->actionRenderLayout('login_form');
     }
 	public function actionRegister() :void {
-		$login = strip_tags($_POST['login']);
-		$pass = strip_tags($_POST['pass']);
+		$request = new Request();
+		$login = $request->post('login');
+		$pass = $request->post('pass');
 		$repo = new Repository(User::class);
 		if (empty($repo->getTableByProperty('login',$login))) {
 			$user = new User($login,$pass);
