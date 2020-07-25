@@ -4,7 +4,6 @@
 namespace app\services;
 
 
-
 class Request
 {
 	protected string $requestString;
@@ -15,9 +14,9 @@ class Request
 	public function __construct()
 	{
 		$this->requestString = $_SERVER['REQUEST_URI'];
-		preg_match_all($this->regexp,$this->requestString,$matches);
-		$this->controllerName = $matches['controller'][0];
-		$this->actionName = $matches['action'][0];
+		preg_match($this->regexp,$this->requestString,$matches);
+		$this->controllerName = $matches['controller'] ?: '';
+		$this->actionName = $matches['action'] ?: '';
 	}
 
 	public function getControllerName() :string

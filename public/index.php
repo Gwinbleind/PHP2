@@ -5,10 +5,18 @@ use app\exceptions\RecordException;
 use app\services\Autoloader;
 use app\services\Request;
 use app\services\TemplateRenderer;
+//use Tracy\Debugger;
+
+//error_reporting(E_ALL);
+ini_set('display_errors','1');
+ini_set('display_startup_errors','1');
 
 include realpath("../services/Autoloader.php");
 include realpath("../vendor/autoload.php");
 spl_autoload_register([new Autoloader(), 'loadClass']);
+
+//Debugger::enable();
+
 session_start();
 
 //http://php2?c=product&a=card&id=1                 Один продукт
